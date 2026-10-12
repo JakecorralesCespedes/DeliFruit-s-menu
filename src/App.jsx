@@ -15,6 +15,16 @@ async function api(path, options = {}) {
   return payload;
 }
 
+function ImagePreview({ image, onClose }) {
+  return <div className="image-preview-overlay" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
+    <section className="image-preview" role="dialog" aria-modal="true" aria-label={`Foto de referencia: ${image.alt}`}>
+      <button type="button" className="icon-button image-preview__close" onClick={onClose} aria-label="Cerrar foto">×</button>
+      <img className="image-preview__image" src={image.src} alt={image.alt} />
+      <div className="image-preview__caption"><strong>{image.alt}</strong><span>Foto de referencia</span></div>
+    </section>
+  </div>;
+}
+
 function ProductCard({ product, onChoose }) {
   const startPrice = product.options?.length
     ? Math.min(...product.options.map((option) => option.price))
@@ -38,7 +48,7 @@ function ProductCard({ product, onChoose }) {
   );
 }
 
-function ProductDialog({ product, toppings, onClose, onAdd }) {
+function ProductDialog({ product, toppings, onClose, onAdd, onPreview }) {
   const [optionIndex, setOptionIndex] = useState(0);
   const [flavor, setFlavor] = useState("");
   const [toppingIds, setToppingIds] = useState([]);
@@ -64,6 +74,7 @@ function ProductDialog({ product, toppings, onClose, onAdd }) {
         <button className="icon-button dialog-close" onClick={onClose} aria-label="Cerrar">×</button>
         <div className="product-dialog__visual">
           {product.image ? <img src={product.image} alt="" /> : <span>{product.emoji || "🍓"}</span>}
+          {product.image && <button type="button" className="image-zoom-button" onClick={() => onPreview(product.image, product.name)}>⌕ Ver foto grande</button>}
         </div>
         <div className="product-dialog__content">
           <span className="eyebrow">A tu manera</span>
@@ -107,7 +118,7 @@ function ProductDialog({ product, toppings, onClose, onAdd }) {
   );
 }
 
-function CartPanel({ cart, onClose, onRemove, onCheckout }) {
+function CartPanel({ cart, onClose, onRemove, onCheckout, onPreview }) {
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [note, setNote] = useState("");
@@ -153,7 +164,7 @@ function CartPanel({ cart, onClose, onRemove, onCheckout }) {
         </div>
         {confirmation ? <div className="order-confirmation"><span className="order-confirmation__check">✓</span><span className="eyebrow">Pedido recibido</span><h3>¡Gracias, {confirmation.customerName}!</h3><p>Ya recibimos tu pedido. Empezaremos a prepararlo pronto.</p><div className="order-confirmation__code"><small>Número de pedido</small><strong>{confirmation.id}</strong></div><button className="button button--primary" onClick={onClose}>Volver al menú</button></div> : !cart.length ? <div className="cart-empty"><span>🍓</span><h3>Tu bolsa está vacía</h3><p>Elegí algo rico del menú y aquí lo vas a encontrar.</p></div> : <>
           <div className="cart-lines">{cart.map((line) => <article className="cart-line" key={line.id}>
-            <span className="cart-line__emoji">{line.emoji}</span>
+            {line.image ? <button type="button" className="cart-line__photo" onClick={() => onPreview(line.image, line.productName)} aria-label={`Ver foto de ${line.productName} en grande`}><img src={line.image} alt="" /><span>Ver</span></button> : <span className="cart-line__emoji">{line.emoji}</span>}
             <div className="cart-line__body"><strong>{line.quantity}× {line.productName}</strong>{line.details && <small>{line.details}</small>}<span>{money(line.unitPrice * line.quantity)}</span></div>
             <button className="remove-button" onClick={() => onRemove(line.id)} aria-label={`Quitar ${line.productName}`}>×</button>
           </article>)}</div>
@@ -265,7 +276,7 @@ function ProductEditor({ categories, item, onCancel, onSave }) {
   </form>;
 }
 
-function AdminPanel({ menu, setMenu, close, password, setPassword }) {
+function AdminPanel({ menu, setMenu, close, password, setPassword, onPreview }) {
   const [tab, setTab] = useState("pedidos");
   const [orders, setOrders] = useState([]);
   const [filter, setFilter] = useState("todos");
@@ -346,6 +357,7 @@ function AdminPanel({ menu, setMenu, close, password, setPassword }) {
     entregados: orders.filter((order) => order.status === "entregado").length,
   }), [orders]);
   const filteredOrders = filter === "todos" ? orders : orders.filter((order) => order.status === filter);
+  const productImages = useMemo(() => new Map((menu.categories || []).flatMap((category) => category.products.map((product) => [product.id, product.image || ""]))), [menu]);
 
   return <div className="admin-overlay" onMouseDown={(event) => event.target === event.currentTarget && close()}>
     <section className="admin-shell" role="dialog" aria-modal="true" aria-label="Administración de DeliFruit's">
@@ -376,7 +388,16 @@ function AdminPanel({ menu, setMenu, close, password, setPassword }) {
             {!filteredOrders.length ? <div className="admin-empty"><span>✨</span><h3>Todo al día</h3><p>{filter === "todos" ? "Cuando llegue un pedido, aparecerá aquí." : "No hay pedidos en esta lista."}</p></div> : <div className="orders-grid">{filteredOrders.map((order) => <article className="order-card" key={order.id}>
               <div className="order-card__top"><div><span className="order-id">{order.id}</span><span className={`status-pill status-pill--${slug(order.status)}`}>{order.status}</span><span className="order-channel">{order.channel === "whatsapp" ? "WhatsApp" : "Página"}</span></div><time>{new Date(order.createdAt).toLocaleString("es-CR", { dateStyle: "medium", timeStyle: "short" })}</time></div>
               <h3>{order.customerName}</h3>{order.customerPhone && <p className="order-contact">☎ {order.customerPhone}</p>}
-              <ul className="order-items">{order.items.map((item, index) => <li key={`${item.productName}-${index}`}><span>{item.quantity}× {item.productName}{item.details && <small>{item.details}</small>}</span><strong>{money(item.unitPrice * item.quantity)}</strong></li>)}</ul>
+              <ul className="order-items">{order.items.map((item, index) => {
+                const image = item.image || productImages.get(item.productId);
+                return <li key={`${item.productName}-${index}`}>
+                  <div className="order-item__info">
+                    {image ? <button type="button" className="order-item__thumb" onClick={() => onPreview(image, item.productName)} aria-label={`Ver foto de ${item.productName} en grande`}><img src={image} alt="" /><span>Ver</span></button> : <span className="order-item__emoji">{item.emoji || "🍓"}</span>}
+                    <span className="order-item__name">{item.quantity}× {item.productName}{item.details && <small>{item.details}</small>}</span>
+                  </div>
+                  <strong>{money(item.unitPrice * item.quantity)}</strong>
+                </li>;
+              })}</ul>
               {order.note && <p className="order-note"><strong>Nota:</strong> {order.note}</p>}
               <div className="order-card__bottom"><span>Total <strong>{money(order.total)}</strong></span>{order.status === "pendiente" ? <button className="button button--primary button--small" onClick={() => updateStatus(order, "en proceso")}>Empezar pedido →</button> : order.status === "en proceso" ? <button className="button button--success button--small" onClick={() => updateStatus(order, "entregado")}>Marcar entregado ✓</button> : <span className="delivered-check">✓ Entregado</span>}</div>
             </article>)}</div>}
@@ -411,6 +432,7 @@ export default function App() {
   const [cart, setCart] = useState([]);
   const [cartOpen, setCartOpen] = useState(false);
   const [adminOpen, setAdminOpen] = useState(false);
+  const [imagePreview, setImagePreview] = useState(null);
   const [adminPassword, setAdminPassword] = useState(() => sessionStorage.getItem("df-admin-key") || "");
   const [toast, setToast] = useState("");
 
@@ -419,10 +441,14 @@ export default function App() {
   }, []);
   useEffect(() => { if (menu) setActiveCategory((current) => menu.categories.some((category) => category.id === current) ? current : menu.categories[0]?.id || ""); }, [menu]);
   useEffect(() => {
-    function closeOnEscape(event) { if (event.key === "Escape") { setSelectedProduct(null); setCartOpen(false); setAdminOpen(false); } }
+    function closeOnEscape(event) {
+      if (event.key !== "Escape") return;
+      if (imagePreview) setImagePreview(null);
+      else { setSelectedProduct(null); setCartOpen(false); setAdminOpen(false); }
+    }
     window.addEventListener("keydown", closeOnEscape);
     return () => window.removeEventListener("keydown", closeOnEscape);
-  }, []);
+  }, [imagePreview]);
 
   const category = menu?.categories.find((item) => item.id === activeCategory);
   const cartCount = cart.reduce((sum, line) => sum + line.quantity, 0);
@@ -431,7 +457,7 @@ export default function App() {
   function addToCart({ product, option, flavor, selectedToppings, quantity, unitPrice }) {
     const details = [option?.name, flavor, selectedToppings.map((topping) => topping.name).join(", ")].filter(Boolean).join(" · ");
     setCart((current) => [...current, {
-      id: makeId(), productId: product.id, productName: product.name, emoji: product.emoji || "🍓",
+      id: makeId(), productId: product.id, productName: product.name, emoji: product.emoji || "🍓", image: product.image || "",
       optionName: option?.name || "", flavor: flavor || "", toppings: selectedToppings.map(({ id, name, price }) => ({ id, name, price })),
       details, quantity, unitPrice,
     }]);
@@ -441,7 +467,9 @@ export default function App() {
   }
 
   async function submitOrder(order) {
-    const savedOrder = await api("/api/orders", { method: "POST", body: JSON.stringify(order) });
+    const { items, ...orderDetails } = order;
+    const orderForServer = { ...orderDetails, items: items.map(({ image, ...item }) => item) };
+    const savedOrder = await api("/api/orders", { method: "POST", body: JSON.stringify(orderForServer) });
     setCart([]);
     return savedOrder;
   }
@@ -472,9 +500,10 @@ export default function App() {
 
     <footer className="site-footer"><a className="brand" href="#top" aria-label="DeliFruit's, inicio"><img className="brand__logo brand__logo--footer" src="/img/delifruits-logo.png" alt="DeliFruit's · 6132-5941" /></a><a href={`https://wa.me/${WHATSAPP}`} target="_blank" rel="noreferrer">Hablemos por WhatsApp ↗</a><span>© {new Date().getFullYear()} DeliFruit's · Hecho con cariño</span></footer>
 
-    {selectedProduct && <ProductDialog product={selectedProduct} toppings={menu?.toppings || []} onClose={() => setSelectedProduct(null)} onAdd={addToCart} />}
-    {cartOpen && <CartPanel cart={cart} onClose={() => setCartOpen(false)} onRemove={(id) => setCart((current) => current.filter((line) => line.id !== id))} onCheckout={submitOrder} />}
-    {adminOpen && <AdminPanel menu={menu || { categories: [], toppings: [] }} setMenu={setMenu} close={() => setAdminOpen(false)} password={adminPassword} setPassword={setAdminPassword} />}
+    {selectedProduct && <ProductDialog product={selectedProduct} toppings={menu?.toppings || []} onClose={() => setSelectedProduct(null)} onAdd={addToCart} onPreview={(src, alt) => setImagePreview({ src, alt })} />}
+    {cartOpen && <CartPanel cart={cart} onClose={() => setCartOpen(false)} onRemove={(id) => setCart((current) => current.filter((line) => line.id !== id))} onCheckout={submitOrder} onPreview={(src, alt) => setImagePreview({ src, alt })} />}
+    {adminOpen && <AdminPanel menu={menu || { categories: [], toppings: [] }} setMenu={setMenu} close={() => setAdminOpen(false)} password={adminPassword} setPassword={setAdminPassword} onPreview={(src, alt) => setImagePreview({ src, alt })} />}
+    {imagePreview && <ImagePreview image={imagePreview} onClose={() => setImagePreview(null)} />}
     {toast && <div className="toast" role="status">✓ {toast}</div>}
   </>;
 }
