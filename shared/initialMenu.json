@@ -1,0 +1,56 @@
+{
+  "categories": [
+    {
+      "id": "heladeria",
+      "name": "Heladería",
+      "eyebrow": "Un clásico que siempre se antoja",
+      "products": [
+        { "id": "conos", "name": "Conos", "emoji": "🍦", "description": "Helado cremoso servido en cono.", "options": [{ "name": "Sencillo", "price": 600 }, { "name": "Doble", "price": 1200 }, { "name": "Triple", "price": 1800 }] },
+        { "id": "ensaladas", "name": "Ensaladas de frutas", "emoji": "🍉", "description": "Fruta fresca preparada al momento.", "image": "/img/heladeria-ensalada.jpg", "options": [{ "name": "Sin helado", "price": 1200 }, { "name": "Personal", "price": 2200 }, { "name": "Doble", "price": 2800 }] },
+        { "id": "crepas", "name": "Crepas", "emoji": "🥞", "description": "Crepa dulce para disfrutar sin prisa.", "image": "/img/heladeria-crepa.jpg", "options": [{ "name": "Única", "price": 3200 }] },
+        { "id": "gelatina", "name": "Gelatina con helado", "emoji": "🍮", "description": "Gelatina suave con una bola de helado.", "image": "/img/heladeria-gelatina.jpg", "options": [{ "name": "Sencilla", "price": 1200 }, { "name": "Especial", "price": 1800 }] },
+        { "id": "banana-split", "name": "Banana Split", "emoji": "🍌", "description": "Banano y helado para compartir.", "options": [{ "name": "Dos pelotas", "price": 1700 }, { "name": "Tres pelotas", "price": 2300 }] },
+        { "id": "pina-hawaiana", "name": "Piña Hawaiana", "emoji": "🍍", "description": "Piña con una combinación tropical.", "options": [{ "name": "Única", "price": 2500 }] },
+        { "id": "granizados", "name": "Granizados", "emoji": "🍧", "description": "Refrescante, frutal y preparado al momento.", "image": "/img/heladeria-granizado.jpg", "options": [{ "name": "Pequeño", "price": 500 }, { "name": "Grande", "price": 1000 }] },
+        { "id": "Sunday", "name": "Sunday", "emoji": "🍦", "description": "Un antojo cremoso con todo el sabor.", "image": "/img/Sunday.png", "options": [{ "name": "Única", "price": 1800 }] },
+        { "id": "Chocobanano", "name": "Chocobanano", "emoji": "🍫", "description": "Banano cubierto de chocolate.", "image": "/img/Sunday.png", "options": [{ "name": "Única", "price": 500 }] }
+      ]
+    },
+    {
+      "id": "batidos",
+      "name": "Batidos",
+      "eyebrow": "Fruta de verdad, bien fría",
+      "products": [
+        { "id": "b-pina", "name": "Piña", "emoji": "🍍", "description": "Batido natural de piña.", "price": 1000 },
+        { "id": "b-sandia", "name": "Sandía", "emoji": "🍉", "description": "Batido natural de sandía.", "price": 1000 },
+        { "id": "b-mango", "name": "Mango", "emoji": "🥭", "description": "Batido natural de mango.", "price": 1000 },
+        { "id": "b-maracuya", "name": "Maracuyá", "emoji": "🍹", "description": "Batido natural de maracuyá.", "price": 1000 },
+        { "id": "b-guanabana", "name": "Guanábana", "emoji": "🍈", "description": "Batido natural de guanábana.", "price": 1000 },
+        { "id": "b-frutas", "name": "Frutas", "emoji": "🍓", "description": "Una mezcla fresca de frutas.", "price": 1000 },
+        { "id": "b-verde", "name": "Batido Verde", "emoji": "🥬", "description": "Una mezcla fresca y ligera.", "price": 1000 },
+        { "id": "b-papaya", "name": "Papaya", "emoji": "🧡", "description": "Batido natural de papaya.", "price": 1200 },
+        { "id": "b-pinacolada", "name": "Piña Colada", "emoji": "🥥", "description": "Piña y coco en una mezcla tropical.", "price": 1200 },
+        { "id": "b-fresa", "name": "Fresa", "emoji": "🍓", "description": "Batido natural de fresa.", "price": 1200 },
+        { "id": "b-mora", "name": "Mora", "emoji": "🫐", "description": "Batido natural de mora.", "price": 1200 },
+        { "id": "b-chocomani", "name": "Chocó maní", "emoji": "🍫", "description": "Chocolate con maní, espeso y delicioso.", "price": 1200 },
+        { "id": "b-proteina", "name": "Proteína", "emoji": "💪", "description": "Batido preparado con proteína.", "price": 2000 },
+        { "id": "b-frappe", "name": "Frappé", "emoji": "🥤", "description": "Frappé frío y cremoso.", "price": 2000 }
+      ]
+    },
+    {
+      "id": "milkshakes",
+      "name": "Milkshakes",
+      "eyebrow": "Cremosos, fríos y a tu gusto",
+      "products": [
+        { "id": "ms-helado", "name": "MilkShake de Helado", "emoji": "🥛", "description": "Elegí tu sabor favorito.", "price": 2000, "flavors": ["Amor Fresa", "Amor Mango", "Café", "Chocolate", "Crema Chips", "Frutas", "Menta", "Chicle", "Cheescake", "Vainilla", "Oreo", "Coco", "Almendras"] },
+        { "id": "ms-fruta", "name": "MilkShake con Fruta y Helado", "emoji": "🍓", "description": "Elegí la fruta para tu milkshake.", "price": 2200, "flavors": ["Fresa", "Mora", "Maracuyá", "Melón", "Piña", "Papaya", "Mango"] }
+      ]
+    }
+  ],
+  "toppings": [
+    { "id": "chispas", "name": "Chispas de chocolate", "price": 200 },
+    { "id": "oreo", "name": "Galleta Oreo", "price": 300 },
+    { "id": "chantilly", "name": "Crema chantilly", "price": 300 },
+    { "id": "sirope", "name": "Sirope de chocolate", "price": 200 }
+  ]
+}
