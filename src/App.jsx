@@ -308,7 +308,7 @@ function AdminPanel({ menu, setMenu, close, password, setPassword }) {
   async function updateStatus(order, status) {
     setPanelError("");
     try {
-      const updated = await api(`/api/orders/${encodeURIComponent(order.id)}`, { method: "PATCH", headers: { "x-admin-password": password }, body: JSON.stringify({ status }) });
+      const updated = await api("/api/orders", { method: "PATCH", headers: { "x-admin-password": password }, body: JSON.stringify({ id: order.id, status }) });
       setOrders((current) => current.map((item) => item.id === updated.id ? updated : item));
     } catch (error) { setPanelError(error.message); }
   }
@@ -454,7 +454,7 @@ export default function App() {
     </header>
 
     <main>
-      {loadError ? <section className="startup-error"><span>🍓</span><h1>No pudimos conectar con el menú</h1><p>{loadError}</p><p>Iniciá el servidor de la tienda y recargá esta página.</p><code>npm run api</code></section> : !menu ? <div className="loading-state"><span className="loading-orb">🍓</span><p>Preparando algo rico…</p></div> : <>
+      {loadError ? <section className="startup-error"><span>🍓</span><h1>No pudimos conectar con el menú</h1><p>{loadError}</p><p>Volvé a cargar la página. Si el problema sigue, revisá la configuración del servidor.</p></section> : !menu ? <div className="loading-state"><span className="loading-orb">🍓</span><p>Preparando algo rico…</p></div> : <>
         <section className="hero">
           <div className="hero__copy"><span className="hero-tag"><span></span> Hecho fresco todos los días</span><h1>Un antojo rico<br />te <em>cambia el día.</em></h1><p>Frutas frescas, helados cremosos y mezclas hechas al momento. ¿Qué se te antoja hoy?</p><button className="button button--primary hero__cta" onClick={() => document.getElementById("menu")?.scrollIntoView({ behavior: "smooth" })}>Explorar el menú <span>↓</span></button><div className="hero-note"><span>✳</span> Preparado con cariño en Costa Rica</div></div>
           <div className="hero__art"><div className="hero__blob"></div><div className="hero__photo"><img src="/img/heladeria-crepa.jpg" alt="Crepa fresca de DeliFruit's" /><span className="hero__photo-label">El antojo<br />de hoy <b>↗</b></span></div><span className="hero-sticker hero-sticker--one">🍓</span><span className="hero-sticker hero-sticker--two">✦</span><span className="hero-caption">Momentos frescos, sabores felices</span></div>

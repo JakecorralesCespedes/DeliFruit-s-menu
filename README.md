@@ -15,6 +15,19 @@ El menú se abre en el navegador. Usá **Administración** para cambiar producto
 
 ## Publicar
 
+### En Vercel
+
+El proyecto incluye funciones en `api/` para que Vercel atienda el menú y los pedidos sin ejecutar `npm run api` por separado. Para habilitar la administración y guardar los pedidos entre visitas:
+
+1. Importá este repositorio en Vercel y desplegalo con el preset **Vite**.
+2. Desde **Storage / Marketplace**, conectá una base **Upstash Redis** al proyecto.
+3. En **Settings → Environment Variables**, agregá `ADMIN_PASSWORD` con una contraseña privada. La integración de Upstash debe proporcionar `UPSTASH_REDIS_REST_URL` y `UPSTASH_REDIS_REST_TOKEN`.
+4. Volvé a desplegar después de conectar el almacenamiento y agregar las variables.
+
+El menú público muestra el menú inicial aunque todavía no se haya conectado Redis. Guardar cambios desde administración y registrar pedidos requiere Redis; sin esa conexión, la página muestra un mensaje de configuración en vez de fingir que los datos quedaron guardados.
+
+### En otro servicio Node.js
+
 En un servicio que ejecute Node.js, configurá la variable `ADMIN_PASSWORD` y usá:
 
 ```sh
