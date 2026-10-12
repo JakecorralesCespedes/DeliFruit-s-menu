@@ -392,7 +392,7 @@ function AdminPanel({ menu, setMenu, close, password, setPassword, onPreview }) 
                 const image = item.image || productImages.get(item.productId);
                 return <li key={`${item.productName}-${index}`}>
                   <div className="order-item__info">
-                    {image ? <button type="button" className="order-item__thumb" onClick={() => onPreview(image, item.productName)} aria-label={`Ver foto de ${item.productName} en grande`}><img src={image} alt="" /><span>Ver</span></button> : <span className="order-item__emoji">{item.emoji || "🍓"}</span>}
+                    {image ? <button type="button" className="order-item__thumb" onClick={() => onPreview(image, item.productName)} aria-label={`Ver foto de ${item.productName} en grande`}><img src={image} alt="" /><span>↗ Ver grande</span></button> : <span className="order-item__emoji">{item.emoji || "🍓"}</span>}
                     <span className="order-item__name">{item.quantity}× {item.productName}{item.details && <small>{item.details}</small>}</span>
                   </div>
                   <strong>{money(item.unitPrice * item.quantity)}</strong>
